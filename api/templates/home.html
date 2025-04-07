@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diabetes Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h2>Diabetes Prediction Form</h2>
+    <form id="prediction-form">
+      <input type="number" name="Pregnancies" placeholder="Pregnancies" required>
+      <input type="number" name="Glucose" placeholder="Glucose" required>
+      <input type="number" name="BloodPressure" placeholder="Blood Pressure" required>
+      <input type="number" name="SkinThickness" placeholder="Skin Thickness" required>
+      <input type="number" name="Insulin" placeholder="Insulin" required>
+      <input type="number" step="0.1" name="BMI" placeholder="BMI" required>
+      <input type="number" step="0.01" name="DiabetesPedigreeFunction" placeholder="Diabetes Pedigree Function" required>
+      <input type="number" name="Age" placeholder="Age" required>
+      <button type="submit">Predict</button>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => data[key] = parseFloat(value));
+
+      const response = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      document.getElementById('result').innerText = result.prediction === 1
+        ? 'Prediction: Diabetic'
+        : 'Prediction: Not Diabetic';
+    });
+  </script>
+</body>
+</html>
